@@ -99,6 +99,7 @@ pub fn populate_uname(x: &mut Uname) -> Result<(), ()> {
         (6, 2, _, _) => "Windows Server 2012".to_string(),
         (6, 3, _, 1) => "Windows 8.1".to_string(),
         (6, 3, _, _) => "Windows Server 2012 R2".to_string(),
+        (6, 4, _, _) => "Windows 10 Technical Preview".to_string(),
         (10, 0, ..22000, 1) => "Windows 10".to_string(),
         (10, 0, _, 1) => "Windows 11".to_string(),
         (10, 0, ..17763, _) => "Windows Server 2016".to_string(),

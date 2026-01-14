@@ -88,10 +88,6 @@ mod imp {
     }
 
     cfg_match::cfg_match! {
-        target_family = "unix" => {
-            mod unix;
-            pub use unix::*;
-        }
         target_os = "lilium" => {
             mod lilium;
             pub use lilium::*;
@@ -99,6 +95,10 @@ mod imp {
         target_family = "windows" => {
             mod windows;
             pub use windows::*;
+        }
+        target_family = "unix" => {
+            mod unix;
+            pub use unix::*;
         }
     }
 
