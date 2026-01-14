@@ -17,6 +17,7 @@ use windows::Win32::{
             PROCESSOR_ARCHITECTURE_INTEL,
         },
     },
+    UI::WindowsAndMessaging::{GetSystemMetrics, SM_SERVERR2},
 };
 
 use windows::Wdk::System::SystemServices::RtlGetVersion;
@@ -90,7 +91,13 @@ pub fn populate_uname(x: &mut Uname) -> Result<(), ()> {
         (5, 1, _, _) => "Windows XP".to_string(),
         (5, 2, _, 1) => "Windows XP Professional".to_string(),
         (5, 2, _, _) if (osinfo.wSuiteMask & 0x00008000) != 0 => "Windows Home Server".to_string(),
-        (5, 2, _, _) => "Windows Server 2003".to_string(),
+        (5, 2, _, _) => {
+            if unsafe { GetSystemMetrics(SM_SERVERR2) } == 0 {
+                "Windows Server 2003".to_string()
+            } else {
+                "Windows Server 2003 R2".to_string()
+            }
+        }
         (6, 0, _, 1) => "Windows Vista".to_string(),
         (6, 0, _, _) => "Windows Server 2008".to_string(),
         (6, 1, _, 1) => "Windows 7".to_string(),
