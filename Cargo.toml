@@ -1,0 +1,19 @@
+[package]
+name = "uname"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bytemuck = { version = "1.24.0", features = [
+    "min_const_generics",
+    "must_cast",
+    "const_zeroed",
+] }
+cfg-match = "0.2.1"
+
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.180"
+
+[target.'cfg(target_os = "lilium")'.dependencies]
+lilium-sys = { git = "https://github.com/LiliumOS/lilium-sys.git" }
