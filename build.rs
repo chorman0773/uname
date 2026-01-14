@@ -13,6 +13,8 @@ fn main() {
         ("ios", _) => "iOS",
         ("lilium", "kernel") => "Lilium Kernel",
         ("lilium", _) => "Lilium",
+        ("windows", "gnu" | "gnullvm") => "MinGW",
+        ("windows", _) => "Windows",
         (x, _) => x,
     };
 
