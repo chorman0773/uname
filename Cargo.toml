@@ -17,3 +17,15 @@ libc = "0.2.180"
 
 [target.'cfg(target_os = "lilium")'.dependencies]
 lilium-sys = { git = "https://github.com/LiliumOS/lilium-sys.git" }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62.2", features = [
+    "Win32",
+    "Win32_System",
+    "Win32_System_SystemInformation",
+    "Win32_System_WindowsProgramming",
+] }
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ['cfg(target_os, values("lilium"))']
