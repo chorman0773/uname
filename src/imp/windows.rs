@@ -19,6 +19,8 @@ use windows::Win32::{
     },
 };
 
+use windows::Wdk::System::SystemServices::RtlGetVersion;
+
 pub fn populate_uname(x: &mut Uname) -> Result<(), ()> {
     let mut vstr = Vec::with_capacity(System::WindowsProgramming::MAX_COMPUTERNAME_LENGTH as usize);
 
@@ -53,7 +55,7 @@ pub fn populate_uname(x: &mut Uname) -> Result<(), ()> {
     let mut osinfo: OSVERSIONINFOEXW = unsafe { mem::zeroed() };
     osinfo.dwOSVersionInfoSize = core::mem::size_of::<OSVERSIONINFOEXW>() as u32;
 
-    if let Err(_e) = unsafe { System::SystemInformation::GetVersionExW((&raw mut osinfo).cast()) } {
+    if let Err(_e) = unsafe { RtlGetVersion((&raw mut osinfo).cast()) }.ok() {
         return Err(());
     }
 
