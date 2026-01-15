@@ -1,4 +1,4 @@
-#![no_std]
+#![cfg_attr(not(any(test, feature = "std")), no_std)]
 #![deny(missing_docs)]
 
 //!
@@ -100,6 +100,11 @@ mod imp {
             mod unix;
             pub use unix::*;
         }
+        _ => {
+            pub fn populate_uname(_: &mut Uname) -> Result<(), error_repr::RawOsError> {
+                Err(0xDEADBEEF)
+            }
+        }
     }
 
     #[cfg(target_arch = "x86_64")]
@@ -138,3 +143,7 @@ pub fn uname() -> Result<Uname, Error> {
 
     Ok(uname)
 }
+
+// /// Additional functions used to support guessing the hardware target
+// #[cfg(feature = "guess")]
+// pub mod target;

@@ -1,4 +1,6 @@
 use error_repr::kind::FromRawOsError;
+#[cfg(feature = "std")]
+use error_repr::kind::{FromIoKind, IntoIoKind};
 
 /// [`ErrorKind`][error_repr::kind::ErrorKind] for [`Error`][crate::Error]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -47,7 +49,33 @@ impl FromRawOsError for ErrorKind {
                 }
             }),
             target_family = "windows" => ErrorKind::__Uncategorized, // I don't think there are any others yet
-            _ => ErrorKind::__Uncategorized, // Catch all for non-standard OS
+            _ => if raw == 0xDEADBEEF { // Surely this error code will never show up on a real OS :ferrisClueless:
+                ErrorKind::Unsupported
+            } else {
+                ErrorKind::__Uncategorized
+            }, // Catch all for non-standard OS
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl FromIoKind for ErrorKind {
+    fn from_io_error_kind(kind: std::io::ErrorKind) -> Self {
+        match kind {
+            std::io::ErrorKind::Unsupported => ErrorKind::Unsupported,
+            std::io::ErrorKind::Other => ErrorKind::Other,
+            _ => ErrorKind::__Uncategorized,
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl IntoIoKind for ErrorKind {
+    fn into_io_error_kind(self) -> std::io::ErrorKind {
+        match self {
+            ErrorKind::Unsupported => std::io::ErrorKind::Unsupported,
+            ErrorKind::Other => std::io::ErrorKind::Other,
+            ErrorKind::__Uncategorized => std::io::ErrorKind::Other,
         }
     }
 }

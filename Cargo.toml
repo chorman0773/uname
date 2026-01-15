@@ -2,8 +2,16 @@
 name = "sysname"
 version = "0.1.0"
 edition = "2024"
+license = "MIT OR Apache-2.0"
+description = "Crate for determining the host system name (like `uname(2)`) in a generic manner"
+readme = "README.md"
+
+[features]
+std = ["error-repr/std"]
+# guess = []
 
 [dependencies]
+bitflags = "2.10.0"
 bytemuck = { version = "1.24.0", features = [
     "min_const_generics",
     "must_cast",
@@ -32,4 +40,4 @@ windows = { version = "0.62.2", features = [
 
 [lints.rust.unexpected_cfgs]
 level = "warn"
-check-cfg = ['cfg(target_os, values("lilium"))']
+check-cfg = ['cfg(target_os, values("lilium"))', 'cfg(lilium_ministd)']
