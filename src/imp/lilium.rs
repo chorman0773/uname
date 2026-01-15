@@ -10,7 +10,7 @@ use lilium_sys::sys::{
 
 use crate::Uname;
 
-pub fn populate_uname(v: &mut Uname) -> Result<(), ()> {
+pub fn populate_uname(v: &mut Uname) -> Result<(), isize> {
     let mut os_vendor = String::with_capacity(32);
     let mut kernel_vendor = String::with_capacity(32);
     let mut computer_name = String::with_capacity(32);
@@ -60,7 +60,7 @@ pub fn populate_uname(v: &mut Uname) -> Result<(), ()> {
                 }
             }
         } else {
-            return Err(());
+            return Err(res);
         }
     }
 

@@ -110,9 +110,10 @@ mod imp {
 }
 
 /// A Generic Error type.
-/// This will contain more info later
-#[derive(Debug)]
-pub struct Error(());
+pub type Error = error_repr::Error<error::ErrorKind>;
+
+/// Types for error codes
+pub mod error;
 
 /// Determines the complete name of the system.
 ///
@@ -123,11 +124,17 @@ pub struct Error(());
 /// On unix-like systems, it calls the `uname(2)` function for most fields.
 /// On Lilium, this uses `GetSystemInfo` with the `SysInfoRequestKernelVendor`, `SysInfoRequestOsVersion`, `SysInfoRequestArchInfo`, and `SysInfoRequestProcessorName` to gather information.
 ///
-/// On Windows this uses a number of system calls.
+/// On Windows this uses the following system calls:
+/// * `GetComputerNameExW`,
+/// * `GetSystemInfoEx`,
+/// * `RtlGetVersion`
+///
+/// # Errors
+/// Returns an [`Error`] if computing the system name fails for some reason (this shouldn't happen except on unsupported targets)
 ///
 pub fn uname() -> Result<Uname, Error> {
     let mut uname = Uname::new();
-    imp::populate_uname(&mut uname).map_err(|_| Error(()))?;
+    imp::populate_uname(&mut uname).map_err(|v| Error::from_raw_os_error(v))?;
 
     Ok(uname)
 }

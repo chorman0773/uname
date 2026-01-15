@@ -22,7 +22,7 @@ use windows::Win32::{
 
 use windows::Wdk::System::SystemServices::RtlGetVersion;
 
-pub fn populate_uname(x: &mut Uname) -> Result<(), ()> {
+pub fn populate_uname(x: &mut Uname) -> Result<(), i32> {
     let mut vstr = Vec::with_capacity(System::WindowsProgramming::MAX_COMPUTERNAME_LENGTH as usize);
 
     let mut len = vstr.capacity() as u32;
@@ -36,7 +36,7 @@ pub fn populate_uname(x: &mut Uname) -> Result<(), ()> {
         if e == ERROR_MORE_DATA.into() {
             vstr.reserve(len as usize);
         } else {
-            return Err(());
+            return Err(e.code().0 as i32);
         }
     }
 
@@ -56,8 +56,8 @@ pub fn populate_uname(x: &mut Uname) -> Result<(), ()> {
     let mut osinfo: OSVERSIONINFOEXW = unsafe { mem::zeroed() };
     osinfo.dwOSVersionInfoSize = core::mem::size_of::<OSVERSIONINFOEXW>() as u32;
 
-    if let Err(_e) = unsafe { RtlGetVersion((&raw mut osinfo).cast()) }.ok() {
-        return Err(());
+    if let Err(e) = unsafe { RtlGetVersion((&raw mut osinfo).cast()) }.ok() {
+        return Err(e.code().0 as i32);
     }
 
     let mach = match unsafe { sysinfo.Anonymous.Anonymous.wProcessorArchitecture } {

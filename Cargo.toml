@@ -1,5 +1,5 @@
 [package]
-name = "uname"
+name = "sysname"
 version = "0.1.0"
 edition = "2024"
 
@@ -10,10 +10,12 @@ bytemuck = { version = "1.24.0", features = [
     "const_zeroed",
 ] }
 cfg-match = "0.2.1"
+error-repr = { version = "0.1.0", features = ["alloc"] }
 
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2.180"
+errno-sys = "0.2.0"
 
 [target.'cfg(target_os = "lilium")'.dependencies]
 lilium-sys = { git = "https://github.com/LiliumOS/lilium-sys.git" }

@@ -1,5 +1,5 @@
 fn main() {
-    let x = uname::uname().unwrap();
+    let x = sysname::uname().unwrap();
 
     println!("{x:?}");
 }

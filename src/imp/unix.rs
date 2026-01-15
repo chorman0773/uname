@@ -1,10 +1,10 @@
 use crate::{Uname, helper::bytes_to_string};
 
-pub fn populate_uname(v: &mut Uname) -> Result<(), ()> {
+pub fn populate_uname(v: &mut Uname) -> Result<(), i32> {
     let mut name: libc::utsname = unsafe { core::mem::zeroed() };
 
     if unsafe { libc::uname(&mut name) } < 0 {
-        return Err(());
+        return Err(unsafe { errno_sys::errno_location().read() });
     }
 
     v.kernel_name = bytes_to_string(&name.sysname);
