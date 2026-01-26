@@ -6,6 +6,7 @@ use lilium_sys::sys::{
     error::INSUFFICIENT_LENGTH,
     info::{self, GetSystemInfo, arch_info},
     kstr::{KSlice, KStrPtr},
+    option::OPTION_FLAG_IGNORE,
 };
 
 use crate::Uname;
@@ -30,19 +31,26 @@ pub fn populate_uname(v: &mut Uname) -> Result<(), isize> {
         },
     ];
 
+    unsafe { requests[2].head.flags |= OPTION_FLAG_IGNORE };
+
     let os_version_string = unsafe { &raw mut (requests[0].os_version.osvendor_name) };
     let kernel_version_string = unsafe { &raw mut requests[1].kernel_vendor.kvendor_name };
     let computer_name_string = unsafe { &raw mut requests[2].computer_name.sys_display_name };
+    let computer_name_flags_ignore = unsafe { &raw const requests[2].head.flags };
 
     let strings_array = [
-        (&mut os_vendor, os_version_string),
-        (&mut kernel_vendor, kernel_version_string),
-        (&mut computer_name, computer_name_string),
+        (&mut os_vendor, os_version_string, core::ptr::null()),
+        (&mut kernel_vendor, kernel_version_string, core::ptr::null()),
+        (
+            &mut computer_name,
+            computer_name_string,
+            computer_name_flags_ignore,
+        ),
     ];
     let mut dirty = true;
     while dirty {
         dirty = false;
-        for (string, sptr) in strings_array {
+        for (string, sptr, _) in strings_array {
             let sptr = unsafe { &mut *sptr };
             sptr.len = string.capacity();
             sptr.str_ptr = string.as_mut_ptr();
@@ -64,7 +72,12 @@ pub fn populate_uname(v: &mut Uname) -> Result<(), isize> {
         }
     }
 
-    for (string, sptr) in strings_array {
+    for (string, sptr, ignore) in strings_array {
+        if let Some(flags) = unsafe { ignore.as_ref() }
+            && (flags & OPTION_FLAG_IGNORE) != 0
+        {
+            continue;
+        }
         unsafe { string.as_mut_vec().set_len((*sptr).len) }
     }
 
